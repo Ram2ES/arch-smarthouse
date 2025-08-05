@@ -1,0 +1,65 @@
+@startuml
+title Smarthome Container Diagram
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+top to bottom direction
+
+Person(user, "User", "Пользователь системы Умный дом")
+
+Container_Boundary(UserInteraction, "Взаимодействие с пользователем") {
+    Container(webApp, "Web Application", "JavaScript, HTML, CSS", "Веб-приложение для управления и взаимодействия с устройствами")
+    Container(mobileApp, "Mobile Application", "React Native", "Мобильное приложение для управления и взаимодействия с устройствами")
+    Container(bff, "API", "C#, .NET", "BFF для взаимодействия с бэк-сервисами")
+
+    Rel(user, webApp, "Использует для управления и взаимодействия с устройствами")
+    Rel(user, mobileApp, "Использует для управления и взаимодействия с устройствами")
+    Rel(webApp, bff, "Использует для получения данных и взаимодействия с устройствами")
+    Rel(mobileApp, bff, "Использует для получения данных и взаимодействия с устройствами")
+}
+
+Container_Boundary(SmartDevices, "Устройства умного дома") {
+    Container_Ext(hub, "Hub", "C/C++", "Хаб устройств для управления и сбора данных")
+    Container_Ext(device1, "Device", "any", "Устройство_1")
+    Container_Ext(deviceN, "Device", "any", "Устройство_N")
+    Rel(hub, device1, "Управляет устройством и получает данные о состоянии")
+    Rel(hub, deviceN, "Управляет устройством и получает данные о состоянии")
+}
+
+Container_Boundary(DeviceManagement, "Управление устройствами") {
+    Container(deviceManagementService, "Management API", "C#, .NET", "API для управления устройствами")
+    Container(dbDevices, "Device Database", "PostgreSQL", "Хранит данные об устройствах и имеет привязку к пользователю")
+    
+    Rel(deviceManagementService, dbDevices, "Хранит данные о пользователях и устройствах")
+}
+
+Container_Boundary(DeviceControl, "Взаимодействие с устройствами") {
+    Container(deviceControlService, "Control API", "C#, .NET", "API для взаимодействия с устройствами")
+    Container(deviceScriptingService, "Script API", "C#, .NET", "API для создания пользовательских сценариев")
+    Container(dbDeviceControl, "Device Database", "PostgreSQL", "Хранит данные о текущих состояниях устройств")
+    Container(dbScriptControl, "Scripts Database", "PostgreSQL", "Хранит данные о настроенных сценариях")
+
+    Rel(deviceControlService, dbDeviceControl, "Хранит данные о состоянии устройств")
+    Rel(deviceScriptingService, deviceControlService, "Использует методы управления устройствами")
+    Rel(deviceScriptingService, dbScriptControl, "Хранение пользовательских скриптов")
+}
+
+Container_Boundary(Authentication, "Авторизация и аутентификация") {
+    Container(authService, "Auth Service", "С#, .NET", "Сервис для управления пользователями и проверки прав доступа")
+    Container(dbAuth, "Auth Database", "PostgreSQL", "Хранит данные пользователей и токены")
+    
+    Rel(authService, dbAuth, "Хранит данные пользователей и токены")
+}
+
+Rel(deviceManagementService, authService, "Использует для проверки прав доступа")
+Rel(deviceControlService, authService, "Использует для проверки прав доступа")
+
+Rel(bff, deviceManagementService, "Использует для управления устройствами")
+Rel(bff, deviceControlService, "Использует для взаимодействия с устройствами")
+Rel(bff, authService, "Авторизация и аутентификация")
+Rel(bff, deviceScriptingService, "Использует для функционала создания пользовательских сценариев")
+Rel(deviceControlService, hub, "Отправляет команды на управление устройствами")
+Rel(mobileApp, hub, "Использует для управления устройствами (bluetooth)")
+Rel(deviceControlService, deviceManagementService, "Использует для получения данных об устройствах")
+Rel(hub, deviceManagementService, "Сообщает о добавлении устройства")
+
+@enduml

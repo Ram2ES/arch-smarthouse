@@ -1,0 +1,181 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Smart Home Scripting API
+  description: API для управления сценариями умного дома
+
+schemes:
+  - https
+
+host: api.smarthome.com
+basePath: /api/v1
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Bearer токен авторизации
+
+security:
+  - Bearer: []
+
+paths:
+  /scripts:
+    get:
+      summary: Получить список всех сценариев
+      description: Возвращает список всех доступных сценариев
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: Список сценариев
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Script'
+    post:
+      summary: Создать новый сценарий
+      description: Создает новый сценарий
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: script
+          description: Новый сценарий
+          required: true
+          schema:
+            $ref: '#/definitions/Script'
+      responses:
+        '201':
+          description: Сценарий создан
+          schema:
+            $ref: '#/definitions/Script'
+
+  /scripts/{scriptId}:
+    get:
+      summary: Получить сценарий по ID
+      security:
+        - Bearer: []
+      parameters:
+        - name: scriptId
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Сценарий
+          schema:
+            $ref: '#/definitions/Script'
+    put:
+      summary: Обновить сценарий
+      security:
+        - Bearer: []
+      parameters:
+        - name: scriptId
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: script
+          description: Обновленный сценарий
+          required: true
+          schema:
+            $ref: '#/definitions/Script'
+      responses:
+        '200':
+          description: Сценарий обновлен
+    delete:
+      summary: Удалить сценарий
+      security:
+        - Bearer: []
+      parameters:
+        - name: scriptId
+          in: path
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Сценарий удален
+
+  /scripts/{scriptId}/units:
+    post:
+      summary: Добавить блок в сценарий
+      security:
+        - Bearer: []
+      parameters:
+        - name: scriptId
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: scriptUnit
+          description: Новый блок сценария
+          required: true
+          schema:
+            $ref: '#/definitions/ScriptUnit'
+      responses:
+        '201':
+          description: Блок добавлен
+          schema:
+            $ref: '#/definitions/ScriptUnit'
+
+  /scripts/{scriptId}/units/{unitId}:
+    delete:
+      summary: Удалить блок из сценария
+      security:
+        - Bearer: []
+      parameters:
+        - name: scriptId
+          in: path
+          required: true
+          type: string
+        - name: unitId
+          in: path
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Блок удален
+
+definitions:
+  Script:
+    type: object
+    properties:
+      uid:
+        type: string
+        format: uuid
+      units:
+        type: array
+        items:
+          $ref: '#/definitions/ScriptUnit'
+
+  ScriptUnit:
+    type: object
+    properties:
+      deviceUid:
+        type: string
+        format: uuid
+      commandUid:
+        type: string
+        format: uuid
+      commandArgs:
+        type: object
+
+  Device:
+    type: object
+    properties:
+      uid:
+        type: string
+        format: uuid
+      availableCommands:
+        type: array
+        items:
+          $ref: '#/definitions/Command'
+
+  Command:
+    type: object
+    properties:
+      uid:
+        type: string
+        format: uuid

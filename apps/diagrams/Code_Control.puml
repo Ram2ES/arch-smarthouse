@@ -1,0 +1,48 @@
+@startuml
+title Smarthome Scripting Code Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+class ScriptingController {
+    + void CreateScript()
+    + void UpdateScript()
+    + void DeleteScript()
+    + void GetScript()
+    + void AddScriptUnitTo(ScriptUid)
+    + void DeleteScriptUnitFrom(ScriptUid)
+}
+
+class Device {
+    + Guid Uid
+    - List<Command> AvailableCommands
+    + List<Command> GetAvailableCommands()
+}
+
+class Script {
+    + Guid Uid
+    + List<ScriptUnit> Units
+}
+
+class ScriptUnit{
+    + Guid DeviceUid
+    + Guid CommandUid
+    + object CommandArgs
+    + void AddCommandArg()
+    + void RemoveCommandArg()
+    + void SelectDevice()
+    + void SelectCommand()
+}
+
+class Command {
+    + Guid Uid
+}
+
+Device --  Command : has
+ScriptUnit -- Device : has
+ScriptUnit -- Command : has
+Script -- ScriptUnit : has
+ScriptingController -- Script : using
+ScriptingController -- ScriptUnit : using
+@enduml

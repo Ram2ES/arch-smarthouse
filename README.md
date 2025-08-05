@@ -91,7 +91,7 @@
 - Сложно поддерживать кодовую базу.
 
 ### 5. Визуализация контекста системы — диаграмма С4
-[Диаграмма контекста](./apps/diagrams/Context.png)
+[Диаграмма контекста](./diagrams/Context.png)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
@@ -99,19 +99,19 @@
 
 **Диаграмма контейнеров (Containers)**
 
-[Диаграмма контейнеров](./apps/diagrams/Conteiners.png)
+[Диаграмма контейнеров](./diagrams/Conteiners.png)
 
 **Диаграмма компонентов (Components)**
 
-[Диаграмма компонентов контейнера Device Control API](./apps/diagrams/Component_Control.png)
+[Диаграмма компонентов контейнера Device Control API](./diagrams/Component_Control.png)
 
 **Диаграмма кода (Code)**
 
-[Диаграмма кода компонента Scripting](/apps/diagrams/Code_Control.png)
+[Диаграмма кода компонента Scripting](/diagrams/Code_Control.png)
 
 # Задание 3. Разработка ER-диаграммы
 
-[ER-диаграмма](./apps/diagrams/ER.png)
+[ER-диаграмма](./diagrams/ER.png)
 
 # Задание 4. Создание и документирование API
 

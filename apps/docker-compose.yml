@@ -1,9 +1,14 @@
 version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: smarthome-postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -25,12 +30,26 @@ services:
       dockerfile: Dockerfile
     container_name: smarthome-app
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      temperature-api:
+        condition: service_started
     environment:
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/smarthome
-      TEMPERATURE_API_URL: http://temperature-api:8081
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/smarthome
+      TEMPERATURE_API_URL: http://temperature-api:80
     ports:
       - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+        
+  temperature-api:
+    build:
+      context: ./temperature-api
+      dockerfile: Dockerfile
+    container_name: temperature-api
+    ports:
+      - "8081:80"
     restart: unless-stopped
     networks:
       - smarthome-network

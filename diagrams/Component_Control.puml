@@ -1,0 +1,45 @@
+@startuml
+title Smarthome ControlAPI Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Ext(hub, "Hub", "C/C++", "Хаб устройств для управления и сбора данных")
+
+Container_Boundary(DeviceControl, "DeviceControl System") {
+    Container(deviceControlService, "Control API", "C#, .NET", "API для взаимодействия с устройствами")
+    Container(deviceScriptingService, "Script API", "C#, .NET", "API для создания пользовательских сценариев")
+    Container(dbDeviceControl, "Device Database", "PostgreSQL", "Хранит данные о текущих состояниях устройств")
+    Container(dbScriptControl, "Scripts Database", "PostgreSQL", "Хранит данные о настроенных сценариях")
+}
+
+Container(deviceControlService, "Device Control API", "C#, .NET") {
+    Component(CommandsController, "CommandsController", "Отправка команд на утройства")
+    Component(Control_AuthService, "AuthService", "Авторизация и аутентификация")
+    Component(ServiceLayer, "Service Layer", "Бизнес логика")
+    Component(RepositoryLayer, "Repository Layer", "Слой доступа к данным")
+
+    Rel(CommandsController, Control_AuthService, "Авторизовывает пользователя")
+    Rel(CommandsController,ServiceLayer, "Вызывает бизнес логику")
+    Rel(ServiceLayer,RepositoryLayer, "Читает/пишет данные")
+    Rel(RepositoryLayer,dbDeviceControl, "Читает/пишет данные")
+}
+Rel(ServiceLayer, hub, "Отправляет команды/запросы на устройства")
+
+Container(deviceScriptingService, "Device Scripting API", "C#, .NET") {
+    Component(ScriptingController, "ScriptingController", "CRUD скриптов автоматизации")
+    Component(ScriptingWorker, "ScriptingWorker", "Воркер исполняющий скрипты автоматизации")
+    Component(Sripting_AuthService, "AuthService", "Авторизация и аутентификация")
+    Component(Scripting_ServiceLayer, "Service Layer", "Бизнес логика")
+    Component(Scripting_RepositoryLayer, "Repository Layer", "Слой доступа к данным")
+
+    Rel(ScriptingController, Sripting_AuthService, "Авторизовывает пользователя")
+    Rel(ScriptingWorker,Scripting_RepositoryLayer, "Получает/пишет данные о задачах")
+    Rel(ScriptingController,Scripting_ServiceLayer, "Вызывает бизнес логику")
+    Rel(Scripting_ServiceLayer,Scripting_RepositoryLayer, "Читает/пишет данные")
+    Rel(Scripting_RepositoryLayer,dbScriptControl, "Читает/пишет данные")
+}
+Rel(ScriptingWorker, CommandsController, "Использует для отправки команд на устрайства")
+
+@enduml

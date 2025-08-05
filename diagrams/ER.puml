@@ -1,0 +1,57 @@
+@startuml
+title Smarthome ER Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+class Protocol {
+    + Guid Uid
+    + string Name
+    + object ProtocolData
+}
+
+class Device {
+    + Guid Uid
+    + string Brand
+    + string Model
+    ___
+    + Guid DeviceType
+}
+
+class DeviceType {
+    + Guid Uid
+    + string Name
+}
+
+class Command {
+    + Guid Uid
+    + string Name
+    + object CommandData
+    ___
+    + Guid ProtocolGuid
+    + Guid DeviceType
+}
+
+class User {
+    + Guid Uid
+    + string Name
+    + string Phone
+    + string Email 
+}
+
+class DeviceData {
+    + Guid Uid
+    + object Data
+    + Timestamp DateTime
+    ___
+    + Guid DeviceUid
+}
+
+User "1" -- "M" Device: has
+Command "1" -- "N" Protocol: has
+DeviceType "M" -- "N" Command: has
+Device "1" -- "N" DeviceType: has
+DeviceData "N" -- "1" Device: has
+
+@enduml
